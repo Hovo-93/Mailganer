@@ -1,25 +1,35 @@
-import os
-import smtplib
-from email.mime.text import MIMEText
-from mailganer.celery import app
-from django.template.loader import render_to_string
-from dotenv import load_dotenv
+from django.db.models import Q
+from django.utils.timezone import now
 
-from sending_emails.models import User
+from mailganer.celery import app
+from sending_emails.mail_sender import MailSender
+from sending_emails.models import Newsletter, Email
 
 
 @app.task
-def send_email():
-    load_dotenv()
-    sender = os.getenv('EMAIL_HOST_USER')
-    password = os.getenv('EMAIL_HOST_PASSWORD')
-    server = smtplib.SMTP(os.getenv('EMAIL_HOST'), os.getenv('EMAIL_PORT'))
-    server.starttls()
-    server.login(sender, password)
+def sender_task():
+    emails_to_send = Email.objects.filter(status=Email.PENDING)
+    mailSender = MailSender()
+    for email in emails_to_send:
+        try:
+            mailSender.send(email)
+            email.status = Email.SENT
+        except Exception:
+            email.status = Email.ERROR
+        email.save()
 
-    for user in User.objects.all():
-        to = user.email
-        html_body = render_to_string('sending_emails/test.html', {'name': user.first_name})
-        msg = MIMEText(html_body, "html")
-        msg["Subject"] = "Special for you"
-        server.sendmail(sender, to, msg.as_string())
+
+@app.task
+def schedule_checker():
+    newsletters = Newsletter.objects.filter(status=Newsletter.SCHEDULED).filter(Q(scheduled_at__lte=now()))
+    for newsletter in newsletters:
+        newsletter.set_pending()
+        subscribers = newsletter.subscribers.all()
+        for sub in subscribers:
+            Email.objects.create(
+                status=Email.PENDING,
+                newsletter_id=newsletter.id,
+                subscriber_id=sub.id
+            )
+
+        newsletter.set_completed()
