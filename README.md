@@ -1,4 +1,4 @@
-##Небольшой сервис для отправки имейл рассылок 
+## Небольшой сервис для отправки имейл рассылок 
 
 ## Описание
 
@@ -65,11 +65,13 @@ EMAIL_HOST_PASSWORD = 'your_email_password'
 ```python
 python manage.py runserver
 ```
-####Переходим в админку
+
+#### Переходим в админку
 1. Создаем подписчиков(subscribers)
 2. 
 
-###Запуск Celery
+#### Запуск Celery
+
 ```
 Для Windows:
     celery -A mailganer worker -l info --pool=solo
