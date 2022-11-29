@@ -78,7 +78,10 @@ python manage.py runserver
 #### Шаг 9. Переходим в админку
 1. Создаем подписчиков [Subscribers](http://127.0.0.1:8000/admin/sending_emails/subscriber/)
 2. Создаем рассылку [Newsletter](http://127.0.0.1:8000/admin/sending_emails/newsletter/)
-
+3. При вводе названия шаблона, необходимо добавить .html
+```python
+    template_name.html
+```
 #### Шаг 10. Запуск Celery
 
 ```
