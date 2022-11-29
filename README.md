@@ -43,6 +43,13 @@ EMAIL_HOST_USER = 'your_email'
 EMAIL_HOST_PASSWORD = 'your_email_password'
 
 ```
+#### Если Вы хотите отправить рассылку со своей почты, то необходимо:
+1. Войти в [myaccount](https://myaccount.google.com/security?hl=ru)
+2. Сгенерировать пароль для приложения
+3. Зарегистрировать его в .env как
+```python
+EMAIL_HOST_PASSWORD = 'new_password'
+```
 #### Шаг 4.Создаем и применяем миграции:
 ```python
     python manage.py makemigrations
