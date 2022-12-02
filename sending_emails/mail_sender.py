@@ -51,5 +51,4 @@ class MailSender:
         """
         url = reverse('tracker', kwargs={'id': email_id})
         image_html = '<img src="' + url + '">'
-        print(image_html)
         return html.replace("<body>", image_html + "<body>")
